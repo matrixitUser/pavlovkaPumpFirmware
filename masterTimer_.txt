@@ -1,0 +1,234 @@
+//#include "main.h"
+#include "stdafx.h"
+#include "masterTimer.h"
+
+void TIM2_Init(void)     //Канал счетчиков
+{
+	RCC_APB1PeriphClockCmd(	RCC_APB1Periph_TIM2,ENABLE);
+	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
+	//setting timer 3 interrupt to 1hz ((2400000/24000)*1000)s
+		TIM_TimeBaseStructure.TIM_Prescaler = 8000 ;
+		TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Down;// TIM_CounterMode_Up;
+		TIM_TimeBaseStructure.TIM_Period = 300-1;
+		TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+		TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
+		/* TIM IT enable */
+		TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
+
+		/* TIM2 enable counter */
+		TIM_Cmd(TIM2, DISABLE); //что будет если убрать ильмир
+
+
+	NVIC_InitTypeDef NVIC_InitStructure;
+
+	//enable TIM2 irq
+	NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = IRQ_PRIORITY_PREEMPTIVE(NVIC_PRIORITY_TIMER);
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = IRQ_PRIORITY_PREEMPTIVE(NVIC_PRIORITY_TIMER);
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure); //запуск TIM2_IRQHandler
+	NVIC_EnableIRQ(TIM2_IRQn);
+}
+//timer 1 interrupt
+void TIM2_IRQHandler(void)   //Канал счетчиков
+{
+	//if interrupt happens the do this
+	if(TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET)
+	{
+		//clear interrupt and start counting again to get precise freq
+		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
+
+		TIM_Cmd(TIM2, DISABLE);
+		_printf(2, "\n\rCOUNTER:%10d:Received:%d bytes->\n\r",RTC_GetCounter(),gWriteBufferLen);
+		for(int i=0;i<gWriteBufferLen;i++) _printf(2, " %x",gWriteBuffer[i]);_printf(2, "\n\r");
+		gWriteBuffer[gWriteBufferLen]=0;
+
+		if(gWriteBufferLen) sendToServer();
+		//if(gCounterCMD) gIsAnswerCounter = 1;
+
+	//if(!gServerIdle)
+	//	{
+	//		_printf(2,"TRANSIT usart3(counter)->usart2(modem) gWriteBufferLen=%d gSendData1\n\r",gWriteBufferLen);
+	//		gSendData = 1 << gProfile;
+	//	}
+	}
+}
+
+void TIM3_Init(void)
+{
+	RCC_APB1PeriphClockCmd(	RCC_APB1Periph_TIM3,ENABLE);
+	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
+	//setting timer 3 interrupt to 1hz ((2400000/24000)*1000)s
+		TIM_TimeBaseStructure.TIM_Prescaler = 8000 ;
+		TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Down;// TIM_CounterMode_Up;
+		TIM_TimeBaseStructure.TIM_Period = 50-1; //100 uSec
+		TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+		TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);
+		/* TIM IT enable */
+		TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
+
+		/* TIM3 enable counter */
+		TIM_Cmd(TIM3, DISABLE); //что будет если убрать ильмир
+
+
+	NVIC_InitTypeDef NVIC_InitStructure;
+
+	//enable tim3 irq
+	NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = IRQ_PRIORITY_PREEMPTIVE(NVIC_PRIORITY_TIMER);
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = IRQ_PRIORITY_PREEMPTIVE(NVIC_PRIORITY_TIMER);
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+
+	NVIC_Init(&NVIC_InitStructure); //запуск TIM3_IRQHandler
+
+	//NVIC_SetPriority (TIM3_IRQn, 4);
+
+	NVIC_EnableIRQ(TIM3_IRQn);
+	//NVIC_SetPriority (USART1_IRQn, 4);
+}
+//timer 3 interrupt  Запускается  при получение данных  от модема (если между байтами меньше  0,1сек складывает в один пакет)
+void TIM3_IRQHandler(void){
+
+	//if interrupt happens the do this
+	if(TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET)
+	{
+		//clear interrupt and start counting again to get precise freq
+		TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
+
+		TIM_Cmd(TIM3, DISABLE);
+		_printf(2, "TIM3 stop.g_lenReceived=%d \n\r",g_lenReceived);
+		//printf("%s",g_frame);		for(int i=0;i<g_lenReceived;i++) _printf(2, "%x ",g_frame[i]);_printf(2, "\n\r");
+		g_frame[g_lenReceived]=0;
+
+		if((TIM4->CR1 & TIM_CR1_CEN) == 0) //Если нет ожидания ответа от модема, то освобождает порт 2
+		{
+			if(g_lenReceived > 2)
+			{
+				gIsAnswer = 1;
+				gUSART2_IDLE = 1;
+				_printf(2, "TIM3  Call URC\n\r");
+				URC();
+			}
+		}
+	}
+}
+
+
+void TIM4_Init(void)
+{
+	RCC_APB1PeriphClockCmd(	RCC_APB1Periph_TIM4,ENABLE);
+	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
+	//setting timer 3 interrupt to 1hz ((2400000/24000)*1000)s
+		TIM_TimeBaseStructure.TIM_Prescaler = 8000 ;
+		TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;// TIM_CounterMode_Up;
+		TIM_TimeBaseStructure.TIM_Period = 200-1;
+		TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+		TIM_TimeBaseInit(TIM4, &TIM_TimeBaseStructure);
+		/* TIM IT enable */
+		TIM_ITConfig(TIM4, TIM_IT_Update, ENABLE);
+
+		/* TIM3 enable counter */
+		TIM_Cmd(TIM4, DISABLE); //что будет если убрать ильмир
+
+
+	NVIC_InitTypeDef NVIC_InitStructure;
+
+	//enable tim3 irq
+	NVIC_InitStructure.NVIC_IRQChannel = TIM4_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = IRQ_PRIORITY_PREEMPTIVE(NVIC_PRIORITY_TIMER);
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = IRQ_PRIORITY_PREEMPTIVE(NVIC_PRIORITY_TIMER);
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+
+	NVIC_Init(&NVIC_InitStructure); //запуск TIM4_IRQHandler
+
+	//NVIC_SetPriority (TIM3_IRQn, 4);
+
+	NVIC_EnableIRQ(TIM4_IRQn);
+	//NVIC_SetPriority (USART1_IRQn, 4);
+}
+
+//timer 4 interrupt  //Запускается  ожидание ответа от модема
+void TIM4_IRQHandler(void){
+	//if interrupt happens the do this
+	if(TIM_GetITStatus(TIM4, TIM_IT_Update) != RESET)
+	{
+		//clear interrupt and start counting again to get precise freq
+		TIM_ClearITPendingBit(TIM4, TIM_IT_Update);
+		_printf(2, "TIM4 stop:gUSART2_IDLE1\n\r");
+		if(gSocketUp) gSetSocket = 1;
+		gUSART2_IDLE = 1;  //даже, если нет ответа от порта - порт освобождается в течении секунды
+		if(g_lenReceived > 0)
+		{
+			//gIsAnswer = 1;
+			//tsCallback tsCb;
+			//tsCb.cb= gCb;
+			//tsCb.hdl = NULL;
+			//tsCb.param = g_lenReceived;
+			if(g_tsCb.cb != NULL) {Callback_Save(&g_tsCb); g_tsCb.cb =NULL;}
+		}
+/*
+		if(g_dataReceive != NULL)
+		{
+			_printf(2, "TIM4  g_dataReceive != NULL\n\r");
+			g_dataReceive(g_frame, g_lenReceived);
+		}
+		else
+		{
+			_printf(2, "TIM4  g_dataReceive != NULL\n\r");
+			isURC();
+		}
+*/
+
+
+		TIM_Cmd(TIM4, DISABLE);
+	}
+}
+
+
+void TIM7_Init(void)
+{
+	RCC_APB1PeriphClockCmd(	RCC_APB1Periph_TIM7,ENABLE);
+	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
+	//setting timer 7 interrupt to 1hz ((2400000/24000)*1000)s
+		TIM_TimeBaseStructure.TIM_Prescaler = 8000 ;
+		TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;// TIM_CounterMode_Up;
+		TIM_TimeBaseStructure.TIM_Period = 5000-1;
+		TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+		TIM_TimeBaseInit(TIM7, &TIM_TimeBaseStructure);
+		/* TIM IT enable */
+		TIM_ITConfig(TIM7, TIM_IT_Update, ENABLE);
+
+		/* TIM7 enable counter */
+
+	NVIC_InitTypeDef NVIC_InitStructure;
+
+	//enable tim3 irq
+	NVIC_InitStructure.NVIC_IRQChannel = TIM7_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = IRQ_PRIORITY_PREEMPTIVE(NVIC_PRIORITY_TIMER);
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = IRQ_PRIORITY_PREEMPTIVE(NVIC_PRIORITY_TIMER);
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+
+	NVIC_Init(&NVIC_InitStructure); //запуск TIM7_IRQHandler
+	NVIC_EnableIRQ(TIM7_IRQn);
+}
+
+//timer 4 interrupt
+void TIM7_IRQHandler(void){
+	//if interrupt happens the do this
+	if(TIM_GetITStatus(TIM7, TIM_IT_Update) != RESET)
+	{
+		//clear interrupt and start counting again to get precise freq
+		TIM_ClearITPendingBit(TIM7, TIM_IT_Update);
+
+//		gIsSocketUp[0]++;
+//		if(gIsSocketUp[0] > 2)
+//		{
+//			gSocketUp = 1;	gSetSocket=1;
+//		}
+		TIM_Cmd(TIM7, DISABLE);
+		_printf(2, "TIM7 stop  gIsSocketUp[0]=%d\n\r",gIsSocketUp[0]);
+	}
+}
+
+
+

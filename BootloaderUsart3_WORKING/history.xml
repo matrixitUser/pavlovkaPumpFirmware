@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<history>
+   <processor signature="arm-none-eabi-gcc -mcpu=cortex-m3 -mthumb -g -nostartfiles -Map=mx1005r4-p16d16i.map -O1 --gc-sections -LC:\CooCox\CoIDE\configuration\ProgramData\mx1005r4-p16d16i -TC:\CooCox\CoIDE\configuration\ProgramData\mx1005r4-p16d16i/arm-gcc-link.ld -g">
+      <target file="mx1005r4-p16d16i.elf" lastModified="17338696605">
+         <source file="..\obj\stm32f10x_rtc.o" lastModified="1733860029e"/>
+         <source file="..\obj\stm32f10x_tim.o" lastModified="173386003d0"/>
+         <source file="..\obj\system_timer.o" lastModified="17338695f22"/>
+         <source file="..\obj\sleep_reset.o" lastModified="17338695f7f"/>
+         <source file="..\obj\startup_stm32f10x_md_vl.o" lastModified="173386004bf"/>
+         <source file="..\obj\flash.o" lastModified="17338695fe1"/>
+         <source file="..\obj\stm32f10x_dbgmcu.o" lastModified="17338600570"/>
+         <source file="..\obj\iwdg.o" lastModified="17338696034"/>
+         <source file="..\obj\system_stm32f10x.o" lastModified="17338600607"/>
+         <source file="..\obj\tim2_sigpwm.o" lastModified="1733869608d"/>
+         <source file="..\obj\common.o" lastModified="173386960f6"/>
+         <source file="..\obj\stm32f10x_pwr.o" lastModified="1733860072e"/>
+         <source file="..\obj\stm32f10x_gpio.o" lastModified="173386007a4"/>
+         <source file="..\obj\main.o" lastModified="173386961aa"/>
+         <source file="..\obj\callback.o" lastModified="17338696212"/>
+         <source file="..\obj\stm32f10x_rcc.o" lastModified="17338600972"/>
+         <source file="..\obj\stm32f10x_exti.o" lastModified="173386009c1"/>
+         <source file="..\obj\stm32f10x_adc.o" lastModified="17338600a47"/>
+         <source file="..\obj\stm32f10x_usart.o" lastModified="17338600acf"/>
+         <source file="..\obj\crc.o" lastModified="1733869626a"/>
+         <source file="..\obj\usart_v2.o" lastModified="173386962eb"/>
+         <source file="..\obj\stm32f10x_flash.o" lastModified="17338600da2"/>
+         <source file="..\obj\stm32f10x_dma.o" lastModified="17338600dfa"/>
+         <source file="..\obj\misc.o" lastModified="17338601089"/>
+         <source file="..\obj\frame_modbus.o" lastModified="173386963b6"/>
+         <source file="..\obj\irq_v2.o" lastModified="173386963e7"/>
+         <source file="..\obj\stm32f10x_bkp.o" lastModified="173386011f1"/>
+         <source file="..\obj\stm32f10x_iwdg.o" lastModified="17338601250"/>
+      </target>
+   </processor>
+</history>

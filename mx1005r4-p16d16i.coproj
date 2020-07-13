@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Project version="2G - 1.7.8" name="mx1005r4-p16d16i">
+  <Target name="mx1005r4-p16d16i" isCurrent="1">
+    <Device manufacturerId="9" manufacturerName="ST" chipId="258" chipName="STM32F100RC" boardId="" boardName=""/>
+    <BuildOption>
+      <Compile>
+        <Option name="OptimizationLevel" value="1"/>
+        <Option name="UseFPU" value="0"/>
+        <Option name="UserEditCompiler" value=""/>
+        <Option name="SupportCPlusplus" value="0"/>
+        <Includepaths>
+          <Includepath path="."/>
+        </Includepaths>
+        <DefinedSymbols>
+          <Define name="USE_STDPERIPH_DRIVER"/>
+          <Define name="__ASSEMBLY__"/>
+          <Define name="STM32F100RC"/>
+          <Define name="STM32F10X_HD_VL"/>
+        </DefinedSymbols>
+      </Compile>
+      <Link useDefault="0">
+        <Option name="DiscardUnusedSection" value="0"/>
+        <Option name="UserEditLinkder" value=""/>
+        <Option name="UseMemoryLayout" value="1"/>
+        <Option name="nostartfiles" value="1"/>
+        <Option name="LTO" value="0"/>
+        <Option name="IsNewStartupCode" value="1"/>
+        <Option name="Library" value="Not use C Library"/>
+        <Option name="UserEditLinker" value=""/>
+        <LinkedLibraries>
+          <Libset dir="" libs="m"/>
+        </LinkedLibraries>
+        <MemoryAreas debugInFlashNotRAM="1">
+          <Memory name="IROM1" type="ReadOnly" size="0x00040000" startValue="0x08000000"/>
+          <Memory name="IRAM1" type="ReadWrite" size="0x00006000" startValue="0x20000000"/>
+          <Memory name="IROM2" type="ReadOnly" size="" startValue=""/>
+          <Memory name="IRAM2" type="ReadWrite" size="" startValue=""/>
+        </MemoryAreas>
+        <LocateLinkFile path="c:/coocox/coide/configuration/programdata/mx1005r4-p16d16i/arm-gcc-link.ld" type="0"/>
+      </Link>
+      <Output>
+        <Option name="OutputFileType" value="0"/>
+        <Option name="Path" value="./"/>
+        <Option name="Name" value="mx1005r4-p16d16i_with_bootloader"/>
+        <Option name="HEX" value="1"/>
+        <Option name="BIN" value="1"/>
+      </Output>
+      <User>
+        <UserRun name="Run#1" type="Before" checked="0" value=""/>
+        <UserRun name="Run#1" type="After" checked="0" value=""/>
+      </User>
+    </BuildOption>
+    <DebugOption>
+      <Option name="org.coocox.codebugger.gdbjtag.core.adapter" value="ST-Link"/>
+      <Option name="org.coocox.codebugger.gdbjtag.core.debugMode" value="SWD"/>
+      <Option name="org.coocox.codebugger.gdbjtag.core.clockDiv" value="1M"/>
+      <Option name="org.coocox.codebugger.gdbjtag.corerunToMain" value="1"/>
+      <Option name="org.coocox.codebugger.gdbjtag.core.jlinkgdbserver" value=""/>
+      <Option name="org.coocox.codebugger.gdbjtag.core.userDefineGDBScript" value=""/>
+      <Option name="org.coocox.codebugger.gdbjtag.core.targetEndianess" value="0"/>
+      <Option name="org.coocox.codebugger.gdbjtag.core.jlinkResetMode" value="Type 0: Normal"/>
+      <Option name="org.coocox.codebugger.gdbjtag.core.resetMode" value="SYSRESETREQ"/>
+      <Option name="org.coocox.codebugger.gdbjtag.core.ifSemihost" value="0"/>
+      <Option name="org.coocox.codebugger.gdbjtag.core.ifCacheRom" value="1"/>
+      <Option name="org.coocox.codebugger.gdbjtag.core.ipAddress" value="127.0.0.1"/>
+      <Option name="org.coocox.codebugger.gdbjtag.core.portNumber" value="2009"/>
+      <Option name="org.coocox.codebugger.gdbjtag.core.autoDownload" value="1"/>
+      <Option name="org.coocox.codebugger.gdbjtag.core.verify" value="1"/>
+      <Option name="org.coocox.codebugger.gdbjtag.core.downloadFuction" value="Erase Effected"/>
+      <Option name="org.coocox.codebugger.gdbjtag.core.defaultAlgorithm" value="STM32F10x_HD_256.elf"/>
+    </DebugOption>
+    <ExcludeFile/>
+  </Target>
+  <Components path="./">
+    <Component id="30" name="C Library" path="" type="2"/>
+    <Component id="31" name="Retarget printf" path="" type="2"/>
+    <Component id="50" name="CMSIS core" path="" type="2"/>
+    <Component id="440" name="RCC" path="" type="2"/>
+    <Component id="442" name="PWR" path="" type="2"/>
+    <Component id="443" name="BKP" path="" type="2"/>
+    <Component id="444" name="GPIO" path="" type="2"/>
+    <Component id="445" name="EXTI" path="" type="2"/>
+    <Component id="446" name="DMA" path="" type="2"/>
+    <Component id="448" name="RTC" path="" type="2"/>
+    <Component id="449" name="IWDG" path="" type="2"/>
+    <Component id="454" name="DBGMCU" path="" type="2"/>
+    <Component id="455" name="FLASH" path="" type="2"/>
+    <Component id="456" name="TIM" path="" type="2"/>
+    <Component id="457" name="ADC" path="" type="2"/>
+    <Component id="458" name="USART" path="" type="2"/>
+    <Component id="461" name="CMSIS Boot" path="" type="2"/>
+    <Component id="467" name="MISC" path="" type="2"/>
+    <Component id="1947" name="TimeOut" path="" type="2"/>
+  </Components>
+  <Files>
+    <File name="sigpwm.c" path="sigpwm.c" type="1"/>
+    <File name="lib/archive.h" path="lib/archive.h" type="1"/>
+    <File name="irq_v2.c" path="irq_v2.c" type="1"/>
+    <File name="adc1.h" path="adc1.h" type="1"/>
+    <File name="syscalls.c" path="syscalls/syscalls.c" type="1"/>
+    <File name="answerModbusUsart2.h" path="answerModbusUsart2.h" type="1"/>
+    <File name="lib/crc.c" path="lib/crc.c" type="1"/>
+    <File name="stm_lib/src/stm32f10x_dbgmcu.c" path="stm_lib/src/stm32f10x_dbgmcu.c" type="1"/>
+    <File name="stm_lib/inc/stm32f10x_pwr.h" path="stm_lib/inc/stm32f10x_pwr.h" type="1"/>
+    <File name="lib/usart3.h" path="lib/usart3.h" type="1"/>
+    <File name="cmsis/core_cmFunc.h" path="cmsis/core_cmFunc.h" type="1"/>
+    <File name="masterTimer.c" path="masterTimer.c" type="1"/>
+    <File name="stm_lib/src/misc.c" path="stm_lib/src/misc.c" type="1"/>
+    <File name="cmsis_boot/stm32f10x.h" path="cmsis_boot/stm32f10x.h" type="1"/>
+    <File name="stm_lib/inc/stm32f10x_dbgmcu.h" path="stm_lib/inc/stm32f10x_dbgmcu.h" type="1"/>
+    <File name="sendToUp.h" path="sendToUp.h" type="1"/>
+    <File name="cmsis_boot/stm32f10x_conf.h" path="cmsis_boot/stm32f10x_conf.h" type="1"/>
+    <File name="lib/uart5.c" path="lib/uart5.c" type="1"/>
+    <File name="main.h" path="main.h" type="1"/>
+    <File name="stm_lib/inc/stm32f10x_flash.h" path="stm_lib/inc/stm32f10x_flash.h" type="1"/>
+    <File name="lib/uart4.c" path="lib/uart4.c" type="1"/>
+    <File name="frame_transfer.h" path="frame_transfer.h" type="1"/>
+    <File name="lib/abnormal.c" path="lib/abnormal.c" type="1"/>
+    <File name="lib/usart2.h" path="lib/usart2.h" type="1"/>
+    <File name="stm_lib/inc/stm32f10x_dma.h" path="stm_lib/inc/stm32f10x_dma.h" type="1"/>
+    <File name="stm_lib/src/stm32f10x_adc.c" path="stm_lib/src/stm32f10x_adc.c" type="1"/>
+    <File name="stm_lib/inc/stm32f10x_iwdg.h" path="stm_lib/inc/stm32f10x_iwdg.h" type="1"/>
+    <File name="lib/flash.h" path="lib/flash.h" type="1"/>
+    <File name="lib/bkp16.c" path="lib/bkp16.c" type="1"/>
+    <File name="talkingBetweenControllers.c" path="talkingBetweenControllers.c" type="1"/>
+    <File name="sendToUp.c" path="sendToUp.c" type="1"/>
+    <File name="stdio/printf.c" path="stdio/printf.c" type="1"/>
+    <File name="stm_lib/src/stm32f10x_bkp.c" path="stm_lib/src/stm32f10x_bkp.c" type="1"/>
+    <File name="lib/usart1.h" path="lib/usart1.h" type="1"/>
+    <File name="stm_lib/src/stm32f10x_gpio.c" path="stm_lib/src/stm32f10x_gpio.c" type="1"/>
+    <File name="lib" path="" type="2"/>
+    <File name="stm_lib/inc/stm32f10x_usart.h" path="stm_lib/inc/stm32f10x_usart.h" type="1"/>
+    <File name="lib/archive.c" path="lib/archive.c" type="1"/>
+    <File name="lib/swalarm_v2.c" path="lib/swalarm_v2.c" type="1"/>
+    <File name="lib/swalarm_v2.h" path="lib/swalarm_v2.h" type="1"/>
+    <File name="cmsis_boot/system_stm32f10x.c" path="cmsis_boot/system_stm32f10x.c" type="1"/>
+    <File name="struct.h" path="struct.h" type="1"/>
+    <File name="stdio" path="" type="2"/>
+    <File name="stm_lib/inc/misc.h" path="stm_lib/inc/misc.h" type="1"/>
+    <File name="device_types.h" path="device_types.h" type="1"/>
+    <File name="callback.c" path="lib/callback.c" type="1"/>
+    <File name="cmsis/core_cmInstr.h" path="cmsis/core_cmInstr.h" type="1"/>
+    <File name="lib/stdafx.h" path="lib/stdafx.h" type="1"/>
+    <File name="lib/usart2.c" path="lib/usart2.c" type="1"/>
+    <File name="lib/hourly.c" path="lib/hourly.c" type="1"/>
+    <File name="stm_lib/src/stm32f10x_rcc.c" path="stm_lib/src/stm32f10x_rcc.c" type="1"/>
+    <File name="config.c" path="config.c" type="1"/>
+    <File name="answerModbusUsart2.c" path="answerModbusUsart2.c" type="1"/>
+    <File name="global.c" path="global.c" type="1"/>
+    <File name="stm_lib/inc/stm32f10x_bkp.h" path="stm_lib/inc/stm32f10x_bkp.h" type="1"/>
+    <File name="stm_lib/src/stm32f10x_dma.c" path="stm_lib/src/stm32f10x_dma.c" type="1"/>
+    <File name="stm_lib/src" path="" type="2"/>
+    <File name="lib/hourly.h" path="lib/hourly.h" type="1"/>
+    <File name="cmsis" path="" type="2"/>
+    <File name="stm_lib" path="" type="2"/>
+    <File name="lib/usart_v3.h" path="lib/usart_v3.h" type="1"/>
+    <File name="stm_lib/inc/stm32f10x_exti.h" path="stm_lib/inc/stm32f10x_exti.h" type="1"/>
+    <File name="lib/usart1.c" path="lib/usart1.c" type="1"/>
+    <File name="cmsis_boot/startup/startup_stm32f10x_hd_vl.c" path="cmsis_boot/startup/startup_stm32f10x_hd_vl.c" type="1"/>
+    <File name="stm_lib/inc/stm32f10x_adc.h" path="stm_lib/inc/stm32f10x_adc.h" type="1"/>
+    <File name="lib/sleep_reset.c" path="lib/sleep_reset.c" type="1"/>
+    <File name="cmsis_boot/system_stm32f10x.h" path="cmsis_boot/system_stm32f10x.h" type="1"/>
+    <File name="lib/usart3.c" path="lib/usart3.c" type="1"/>
+    <File name="lib/flash.c" path="lib/flash.c" type="1"/>
+    <File name="lib/bkp16.h" path="lib/bkp16.h" type="1"/>
+    <File name="stm_lib/src/stm32f10x_rtc.c" path="stm_lib/src/stm32f10x_rtc.c" type="1"/>
+    <File name="lib/device_types.h" path="lib/device_types.h" type="1"/>
+    <File name="main.c" path="main.c" type="1"/>
+    <File name="lib/callback.h" path="lib/callback.h" type="1"/>
+    <File name="frame_transfer.c" path="frame_transfer.c" type="1"/>
+    <File name="lib/usart_v3.c" path="lib/usart_v3.c" type="1"/>
+    <File name="masterModbus.c" path="masterModbus.c" type="1"/>
+    <File name="lib/uart5.h" path="lib/uart5.h" type="1"/>
+    <File name="lib/callback.c" path="lib/callback.c" type="1"/>
+    <File name="stm_lib/inc/stm32f10x_tim.h" path="stm_lib/inc/stm32f10x_tim.h" type="1"/>
+    <File name="cmsis_boot" path="" type="2"/>
+    <File name="lib/counter.c" path="lib/counter.c" type="1"/>
+    <File name="callback.h" path="lib/callback.h" type="1"/>
+    <File name="lib/rtcalarm.c" path="lib/rtcalarm.c" type="1"/>
+    <File name="stm_lib/src/stm32f10x_tim.c" path="stm_lib/src/stm32f10x_tim.c" type="1"/>
+    <File name="masterTimer_.txt" path="masterTimer_.txt" type="1"/>
+    <File name="frame_modbus.h" path="frame_modbus.h" type="1"/>
+    <File name="lib/vbkp.c" path="lib/vbkp.c" type="1"/>
+    <File name="cmsis_boot/startup" path="" type="2"/>
+    <File name="clock.c" path="clock.c" type="1"/>
+    <File name="answerFrameModbus.h" path="answerFrameModbus.h" type="1"/>
+    <File name="lib/iwdg.c" path="lib/iwdg.c" type="1"/>
+    <File name="stm_lib/src/stm32f10x_iwdg.c" path="stm_lib/src/stm32f10x_iwdg.c" type="1"/>
+    <File name="global.h" path="global.h" type="1"/>
+    <File name="masterModbus.h" path="masterModbus.h" type="1"/>
+    <File name="lib/iwdg.h" path="lib/iwdg.h" type="1"/>
+    <File name="stm_lib/src/stm32f10x_usart.c" path="stm_lib/src/stm32f10x_usart.c" type="1"/>
+    <File name="clock.h" path="clock.h" type="1"/>
+    <File name="stm_lib/inc/stm32f10x_rtc.h" path="stm_lib/inc/stm32f10x_rtc.h" type="1"/>
+    <File name="config.h" path="config.h" type="1"/>
+    <File name="UPP.h" path="UPP.h" type="1"/>
+    <File name="lib/sleep_reset.h" path="lib/sleep_reset.h" type="1"/>
+    <File name="stm_lib/src/stm32f10x_pwr.c" path="stm_lib/src/stm32f10x_pwr.c" type="1"/>
+    <File name="frame_modbus.c" path="frame_modbus.c" type="1"/>
+    <File name="stm_lib/inc/stm32f10x_gpio.h" path="stm_lib/inc/stm32f10x_gpio.h" type="1"/>
+    <File name="lib/vbkp.h" path="lib/vbkp.h" type="1"/>
+    <File name="answerFrameModbus.c" path="answerFrameModbus.c" type="1"/>
+    <File name="sigpwm.h" path="sigpwm.h" type="1"/>
+    <File name="swalarm_v2.h" path="lib/swalarm_v2.h" type="1"/>
+    <File name="cmsis/core_cm3.h" path="cmsis/core_cm3.h" type="1"/>
+    <File name="lib/rtcalarm.h" path="lib/rtcalarm.h" type="1"/>
+    <File name="stm_lib/src/stm32f10x_exti.c" path="stm_lib/src/stm32f10x_exti.c" type="1"/>
+    <File name="lib/common.h" path="lib/common.h" type="1"/>
+    <File name="lib/counter.h" path="lib/counter.h" type="1"/>
+    <File name="lib/crc.h" path="lib/crc.h" type="1"/>
+    <File name="talkingBetweenControllers.h" path="talkingBetweenControllers.h" type="1"/>
+    <File name="lib/uart4.h" path="lib/uart4.h" type="1"/>
+    <File name="lib/abnormal.h" path="lib/abnormal.h" type="1"/>
+    <File name="swalarm_v2.c" path="lib/swalarm_v2.c" type="1"/>
+    <File name="irq_v2.h" path="irq_v2.h" type="1"/>
+    <File name="stm_lib/src/stm32f10x_flash.c" path="stm_lib/src/stm32f10x_flash.c" type="1"/>
+    <File name="adc1.c" path="adc1.c" type="1"/>
+    <File name="stm_lib/inc/stm32f10x_rcc.h" path="stm_lib/inc/stm32f10x_rcc.h" type="1"/>
+    <File name="masterTimer.h" path="masterTimer.h" type="1"/>
+    <File name="stm_lib/inc" path="" type="2"/>
+    <File name="lib/common.c" path="lib/common.c" type="1"/>
+    <File name="hardware.h" path="hardware.h" type="1"/>
+  </Files>
+</Project>
