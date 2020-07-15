@@ -16,6 +16,7 @@ PUBLIC void AnswerControllers(uint8_t *data, uint16_t len)
 	uint8_t head = 1;   //Первый байт после адреса
 	u8 funAndCmd = 2; //смещение на 2: fun = 1, cmd = 1 => 2
 	//if(g_sConfig.u8Mode == MODE_UNKNOWN) g_sConfig.u8Mode = MODE_SLAVE;
+	//printf("01:");for(int jj=0;jj<len;jj++)	printf("%2x ",data[jj]);printf("\n\r");//эти тоже в 2?да
 	ParseDataByFunc(fun, cmd, data + head + funAndCmd, len-(head +funAndCmd));
 	gCountNotAnswerController = 0;
 	gIsRestartMC = 0;
@@ -28,8 +29,11 @@ void ParseDataByFunc(uint8_t fun, uint8_t cmd, uint8_t* frame, uint16_t len)
 		{
 			if(cmd == MODBUS_CMD_SEND)
 			{
-				long int u32Ts = RTC_GetCounter();
 				long int u32Ts1 = (frame[3] << 24) | (frame[2] << 16) | (frame[1] << 8) | frame[0];
+				if(RTC_GetCounter() < TIME_RELEASE)
+				{
+					Rtc_SetTime(u32Ts1);
+				}
 
 				//left upp
 				long int UPP_LEFTLastRespTime = (frame[7] << 24) | (frame[6] << 16) | (frame[5] << 8) | frame[4];
@@ -70,6 +74,7 @@ void ParseDataByFunc(uint8_t fun, uint8_t cmd, uint8_t* frame, uint16_t len)
 				float g_WLSHeight = hh.float_variable;
 				//controllers state
 				u8 answerMode = frame[42];
+				gIsAccessSecondCrtl = frame[43];
 				//printf("myMode=%d  answerMode=%d\n\r", g_sConfig.u8Mode, answerMode);
 				//answer
 				AnswerStateToCtrl(TALKING_BTWN_CONTROLLERS);
@@ -78,6 +83,8 @@ void ParseDataByFunc(uint8_t fun, uint8_t cmd, uint8_t* frame, uint16_t len)
 			{
 				long int u32Ts1 = (frame[3] << 24) | (frame[2] << 16) | (frame[1] << 8) | frame[0];
 				u8 answerMode = frame[4];
+				gIsAccessSecondCrtl = frame[5];
+				gIsAnswerMC= 1;
 				//printf("myMode=%d  answerMode=%d \n\r", g_sConfig.u8Mode, answerMode);
 			}
 			break;
@@ -102,12 +109,18 @@ void ParseDataByFunc(uint8_t fun, uint8_t cmd, uint8_t* frame, uint16_t len)
 		{
 			if(cmd == MODBUS_CMD_SEND)
 			{
-				TalkingCall(TALKING_SWITCH_MASTER);
+				TalkingCallWithParam(TALKING_SWITCH_MASTER, frame[0]);
 			}
 			else
 			{
-				if(frame[4] != MODE_MASTER) break;
-				SwitchMasterSlave();
+				printf("frame = %d \n\r", frame[4]);
+				if(frame[4] != MODE_MASTER){
+					gIsAnswerMC = 1;
+					break;
+				}
+				g_sConfig.u8Mode = MODE_SLAVE;
+				printf("frame = %d u8Mode=%d\n\r", frame[4],g_sConfig.u8Mode);
+				WriteConfig();
 				gIsAnswerMC = 1;
 			}
 			break;
@@ -116,14 +129,44 @@ void ParseDataByFunc(uint8_t fun, uint8_t cmd, uint8_t* frame, uint16_t len)
 		{
 			if(cmd == MODBUS_CMD_SEND)
 			{
-				TalkingCall(TALKING_UPP_RQST);
+				printf("TALKING_UPP_RQST = %d \n\r", frame[0]);
+				TalkingCallWithParam(TALKING_UPP_RQST, frame[0]);
+				//TalkingCall(TALKING_UPP_RQST);
 			}
 			else
 			{
+				softStarter* upp;
+				if(frame[0] == g_UPPstruct->NA) upp = g_UPPstruct;
+				else upp = g_SecondUPP;
+				printf("---na=%d status=%d engineSts=%d, lStart=%d lStop=%d \n\r", g_UPPstruct->NA, g_UPPstruct->status, g_UPPstruct->engineSts, g_UPPstruct->lastStartTime, g_UPPstruct->lastStopTime);
+				upp->status = frame[1];
+				upp->engineSts = frame[2];
 
+				upp->lastRespTime = (uint32_t)((frame[3]<<0) | (frame[4]<<8) | (frame[5]<<16) | (frame[6]<<24));
+				upp->lastStartTime = (uint32_t)((frame[7]<<0) | (frame[8]<<8) | (frame[9]<<16) | (frame[10]<<24));
+				upp->lastStopTime = (uint32_t)((frame[11]<<0) | (frame[12]<<8) | (frame[13]<<16) | (frame[14]<<24));
+				printf("+++na=%d status=%d engineSts=%d, lStart=%d lStop=%d \n\r", g_UPPstruct->NA, g_UPPstruct->status, g_UPPstruct->engineSts, g_UPPstruct->lastStartTime, g_UPPstruct->lastStopTime);
+				gIsAnswerMC= 1;
 			}
 			break;
 		}
+		case TALKING_GIVE_CTRL:
+		{
+			if(cmd == MODBUS_CMD_SEND)
+			{
+				gIsAccessSecondCrtl = frame[0];
+				printf("======gIsAccessSecondCrtl=%d==========\n\r", gIsAccessSecondCrtl);
+				GiveCtrlSecondMC(gIsAccessSecondCrtl, MODBUS_CMD_ANSWER);
+			}
+			else
+			{
+				gIsAccessSecondCrtl = frame[0];
+				printf("======gIsAccessSecondCrtl=%d==========\n\r", gIsAccessSecondCrtl);;
+				gIsAnswerMC= 1;
+			}
+			break;
+		}
+
 		case TALKING_UPP_START:
 		{
 			if(cmd == MODBUS_CMD_SEND)
@@ -136,6 +179,7 @@ void ParseDataByFunc(uint8_t fun, uint8_t cmd, uint8_t* frame, uint16_t len)
 			}
 			break;
 		}
+
 		case TALKING_UPP_STOP:
 		{
 			if(cmd == MODBUS_CMD_SEND)
@@ -150,10 +194,17 @@ void ParseDataByFunc(uint8_t fun, uint8_t cmd, uint8_t* frame, uint16_t len)
 	}
 }
 
+
+void TalkingCallWithParam(u8 hdl, u32 param)
+{
+	tsCallback uppRqstCb = {cb: TalkingCallbackParse, hdl: hdl, param: param};
+	Callback_Save(&uppRqstCb);
+}
+
 void TalkingCall(u8 hdl)
 {
-	tsCallback uppRqstCb = {cb: TalkingCallbackParse, hdl: hdl};
-	Callback_Save(&uppRqstCb);
+	tsCallback tsCb = {cb: TalkingCallbackParse, hdl: hdl};
+	Callback_Save(&tsCb);
 }
 
 void TalkingCallbackParse(u8 hdl, u32 param) // hdl === fun
@@ -164,10 +215,11 @@ void TalkingCallbackParse(u8 hdl, u32 param) // hdl === fun
 			AnswerForAskingWLS(myWLSstatusRqst());
 			return;
 		case TALKING_SWITCH_MASTER:
-			SwitchMasterSlave();
+			SwitchMasterSlave(param);
 			AnswerStateToCtrl(TALKING_SWITCH_MASTER);
 			return;
 		case TALKING_UPP_RQST:
+			UppRqst(TALKING_UPP_RQST, param);
 			return;
 		case TALKING_UPP_START:
 			return;
@@ -176,11 +228,46 @@ void TalkingCallbackParse(u8 hdl, u32 param) // hdl === fun
 	}
 }
 
-void SwitchMasterSlave()
+
+void UppRqst(u8 fun,u32 NA)
 {
-	if(g_sConfig.u8Mode == MODE_SLAVE) g_sConfig.u8Mode = MODE_MASTER;
+	softStarter* upp;
+	if(NA == g_UPPstruct->NA) upp = g_UPPstruct;
+	else upp = g_SecondUPP;
+	UPPstatusRqst(upp);
+	printf("--na=%d status=%d engineSts=%d, lStart=%d lStop=%d \n\r", upp->NA, upp->status, upp->engineSts, upp->lastStartTime, upp->lastStopTime);
+	uint8_t ret[15];
+	ret[0] = upp->NA;
+	ret[1] = upp->status;
+	ret[2] = upp->engineSts;
+	uint8_t bytes[4];
+	memcpy(bytes, &upp->lastRespTime,4);
+	ret[3] = bytes[0];
+	ret[4] = bytes[1];
+	ret[5] = bytes[2];
+	ret[6] = bytes[3];
+
+	memcpy(bytes, &upp->lastStartTime,4);
+	ret[7] = bytes[0];
+	ret[8] = bytes[1];
+	ret[9] = bytes[2];
+	ret[10] = bytes[3];
+
+	memcpy(bytes, &upp->lastStopTime,4);
+	ret[11] = bytes[0];
+	ret[12] = bytes[1];
+	ret[13] = bytes[2];
+	ret[14] = bytes[3];
+	TalkingBtwnCtrls_Send(fun, MODBUS_CMD_ANSWER, ret, sizeof(ret));
+}
+
+void SwitchMasterSlave(u32 param)
+{
+	printf("frame0 =%d \n\r", param);
+	if(param == MODE_MASTER) g_sConfig.u8Mode = MODE_MASTER;
 	else g_sConfig.u8Mode = MODE_SLAVE;
-	//WriteConfig();
+	WriteConfig();
+	printf("u8Mode =%d \n\r", g_sConfig.u8Mode);
 }
 
 PUBLIC void AnswerForAskingWLS(u8 wlsOk)
@@ -215,9 +302,6 @@ void ParseDataFromController(uint8_t* data){
 	uint16_t wls = ((dataControllers[0]<<8)|(dataControllers[1])); //0<<8 and wls
 	uint8_t engineStsAnotherUpp = dataControllers[2];
 }
-
-
-
 
 PUBLIC u8 Talking_Send(uint8_t fun, uint8_t* data){
 	uint32_t lTimeout = 10;
@@ -261,20 +345,22 @@ PUBLIC void TalkingBtwnCtrls_Send(uint8_t fun, uint8_t numCmd, uint8_t* data, ui
 
 void AnswerStateToCtrl(u8 fun)
 {
-	uint8_t ret[5];
+	uint8_t ret[6];
 	long int u32Ts = RTC_GetCounter();
 	memcpy(ret,&u32Ts,4);	//[0;3]
 	ret[4] = g_sConfig.u8Mode;
+	ret[5] = gIsAccessSecondCrtl;
 	TalkingBtwnCtrls_Send(fun, MODBUS_CMD_ANSWER, ret, sizeof(ret));
 }
-
-PUBLIC void AckingWLSToMC(uint8_t *ret)
+void GiveCtrlSecondMC(u8 isAccess, u8 cmd)
 {
-	for(u8 i = 0; i < 4; i++){
-		ret[i] = 0;
-	}
-}
+	uint8_t ret1[4];
+	ArrFillDATANULL(&ret1);
+	ret1[0] = isAccess;
 
+	printf("GiveCtrlSecondMC isAccess = %d \n\r", isAccess);
+	TalkingBtwnCtrls_Send(TALKING_GIVE_CTRL, cmd, ret1, sizeof(ret1));
+}
 PUBLIC void ArrFillDATANULL(uint8_t *ret)
 {
 	for(u8 i = 0; i < 4; i++){
@@ -355,6 +441,6 @@ PUBLIC void CMDForTalkingBetweenControllers(uint8_t *ret){
 
 	//controllers state
 	ret[42] = g_sConfig.u8Mode;
-
+	ret[43] = gIsAccessSecondCrtl;
 	if(!CheckConfigNew(&g_sConfig)) ReadConfig();
 }

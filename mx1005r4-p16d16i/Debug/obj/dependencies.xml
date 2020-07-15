@@ -10,7 +10,7 @@
       <source file="..\..\..\stm_lib\src\misc.c" lastModified="15dec6aab80">
          <include file="..\..\..\stm_lib\inc\misc.h"/>
       </source>
-      <source file="..\..\..\masterModbus.h" lastModified="1733741da27">
+      <source file="..\..\..\masterModbus.h" lastModified="1734833f5f3">
          <include file="..\..\..\lib\stdafx.h"/>
          <include file="..\..\..\main.h"/>
       </source>
@@ -25,7 +25,7 @@
          <include file="..\..\..\main.h"/>
          <include file="..\..\..\lib\swalarm_v2.h"/>
       </source>
-      <source file="..\..\..\masterModbus.c" lastModified="1733779e166">
+      <source file="..\..\..\masterModbus.c" lastModified="17351a0c332">
          <include file="..\..\..\masterModbus.h"/>
          <include file="..\..\..\answerFrameModbus.h"/>
          <include file="..\..\..\stm_lib\inc\stm32f10x_tim.h"/>
@@ -87,7 +87,7 @@
       <source file="..\..\..\sendToUp.h" lastModified="16d429d4878">
          <include file="..\..\..\main.h"/>
       </source>
-      <source file="..\..\..\answerFrameModbus.c" lastModified="17323dfa0ad">
+      <source file="..\..\..\answerFrameModbus.c" lastModified="1735103e534">
          <include file="..\..\..\answerFrameModbus.h"/>
       </source>
       <source file="..\..\..\frame_modbus.h" lastModified="17338d4424b">
@@ -100,6 +100,19 @@
       <source file="..\..\..\cmsis_boot\stm32f10x_conf.h" lastModified="172bcf68002">
       </source>
       <source file="..\..\..\struct.h" lastModified="1730ddaece9">
+      </source>
+      <source file="..\..\..\frame_modbus.c" lastModified="1734d6da341">
+         <include file="..\..\..\frame_modbus.h"/>
+         <include file="..\..\..\config.h"/>
+         <include file="..\..\..\lib\counter.h"/>
+         <include file="..\..\..\lib\hourly.h"/>
+         <include file="..\..\..\lib\abnormal.h"/>
+         <include file="..\..\..\lib\rtcalarm.h"/>
+         <include file="..\..\..\lib\crc.h"/>
+         <include file="..\..\..\lib\usart1.h"/>
+         <include file="..\..\..\lib\usart3.h"/>
+         <include file="..\..\..\lib\sleep_reset.h"/>
+         <include file="..\..\..\adc1.h"/>
       </source>
       <source file="..\..\..\stm_lib\src\stm32f10x_bkp.c" lastModified="15dec6aab80">
          <include file="..\..\..\stm_lib\inc\stm32f10x_bkp.h"/>
@@ -114,7 +127,7 @@
       <source file="..\..\..\stm_lib\inc\stm32f10x_dbgmcu.h" lastModified="15dec6aab80">
          <include file="..\..\..\cmsis_boot\stm32f10x.h"/>
       </source>
-      <source file="..\..\..\talkingBetweenControllers.h" lastModified="17338ca5479">
+      <source file="..\..\..\talkingBetweenControllers.h" lastModified="17350fe0648">
          <include file="..\..\..\main.h"/>
       </source>
       <source file="..\..\..\lib\counter.h" lastModified="16c5fccb150">
@@ -123,7 +136,7 @@
       <source file="..\..\..\stm_lib\inc\stm32f10x_dma.h" lastModified="15dec6aab80">
          <include file="..\..\..\cmsis_boot\stm32f10x.h"/>
       </source>
-      <source file="..\..\..\talkingBetweenControllers.c" lastModified="17338ca5469">
+      <source file="..\..\..\talkingBetweenControllers.c" lastModified="17351345254">
          <include file="..\..\..\talkingBetweenControllers.h"/>
       </source>
       <source file="..\..\..\lib\counter.c" lastModified="15e3483b380">
@@ -132,7 +145,7 @@
       <source file="..\..\..\lib\sleep_reset.h" lastModified="172c604809e">
          <include file="..\..\..\main.h"/>
       </source>
-      <source file="..\..\..\global.h" lastModified="173372120c5">
+      <source file="..\..\..\global.h" lastModified="1734d6da386">
          <include file="..\..\..\main.h"/>
       </source>
       <source file="..\..\..\stm_lib\inc\stm32f10x_rcc.h" lastModified="15dec6aab80">
@@ -143,7 +156,7 @@
       <source file="..\..\..\lib\sleep_reset.c" lastModified="16cbeb03250">
          <include file="..\..\..\main.h"/>
       </source>
-      <source file="..\..\..\global.c" lastModified="173379aaecb">
+      <source file="..\..\..\global.c" lastModified="1734d6da367">
          <include file="..\..\..\global.h"/>
       </source>
       <source file="..\..\..\lib\crc.h" lastModified="172dbd77b38">
@@ -159,10 +172,10 @@
       <source file="..\..\..\lib\crc.c" lastModified="172dbe28b33">
          <include file="..\..\..\lib\crc.h"/>
       </source>
-      <source file="..\..\..\lib\bkp16.h" lastModified="173239a4dae">
+      <source file="..\..\..\lib\bkp16.h" lastModified="1734787ec1c">
          <include file="..\..\..\main.h"/>
       </source>
-      <source file="..\..\..\config.c" lastModified="17337bc3cd4">
+      <source file="..\..\..\config.c" lastModified="1734834e1f8">
          <include file="..\..\..\config.h"/>
       </source>
       <source file="..\..\..\stm_lib\src\stm32f10x_rcc.c" lastModified="15dec6aab80">
@@ -225,15 +238,15 @@
          <include file="..\..\..\main.h"/>
          <include file="..\..\..\lib\usart_v3.h"/>
       </source>
+      <source file="..\..\..\answerModbusUsart2.h" lastModified="16dcf5f7290">
+         <include file="..\..\..\main.h"/>
+      </source>
       <source file="..\..\..\stm_lib\inc\stm32f10x_flash.h" lastModified="15dec6aab80">
          <include file="..\..\..\cmsis_boot\stm32f10x.h"/>
       </source>
       <source file="..\..\..\stm_lib\src\stm32f10x_usart.c" lastModified="172bcf677fb">
          <include file="..\..\..\stm_lib\inc\stm32f10x_usart.h"/>
          <include file="..\..\..\stm_lib\inc\stm32f10x_rcc.h"/>
-      </source>
-      <source file="..\..\..\answerModbusUsart2.h" lastModified="16dcf5f7290">
-         <include file="..\..\..\main.h"/>
       </source>
       <source file="..\..\..\lib\usart2.c" lastModified="16da0485d00">
          <include file="..\..\..\main.h"/>

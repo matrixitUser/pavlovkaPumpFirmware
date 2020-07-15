@@ -217,6 +217,8 @@ extern PUBLIC u8 gFromUsart;
 #define UART5_NUMBER 					5
 
 extern tsCallback g_tsCb;
+extern u8 gIsAccessSecondCrtl;
+extern u8 gCountNotAnswerPump;
 #endif
 
 

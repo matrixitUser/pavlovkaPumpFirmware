@@ -19,8 +19,8 @@
 //#define BKP16_VBKP10_11			5
 //#define BKP16_VBKP12_13			6
 //#define BKP16_VBKP14_15			7
-#define BKP16_FLAGS				8
-#define BKP16_TIMEOFF			9
+#define BKP16_FLAGS				8  	//9
+#define BKP16_TIMEOFF			9	//10
 
 PUBLIC u16 	Bkp16_Read(u8 n);
 PUBLIC void Bkp16_Write(u8 n, u16 value);

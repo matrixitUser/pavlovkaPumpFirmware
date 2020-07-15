@@ -142,3 +142,5 @@ PUBLIC u8 gIsAnswerMC = 0;
 PUBLIC uint8_t g_timeout2 = 0;
 PUBLIC uint8_t g_dataTalk[40];
 tsCallback g_tsCb;
+u8 gIsAccessSecondCrtl = 0;
+u8 gCountNotAnswerPump = 0;

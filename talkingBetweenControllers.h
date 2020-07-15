@@ -7,6 +7,7 @@
 	#define TALKING_UPP_RQST							3
 	#define TALKING_UPP_START							4
 	#define TALKING_UPP_STOP							5
+	#define TALKING_GIVE_CTRL							6
 
 	//NUM CMD pavlovka
 	#define MODBUS_CMD_SEND								0
@@ -21,3 +22,4 @@
 	void TalkingCall(u8 hdl);
 	void TalkingCallbackParse(u8 hdl, u32 param);
 	PUBLIC void ArrFillDATANULL(uint8_t *ret);
+	void GiveCtrlSecondMC(u8 isAccess, u8 cmd);

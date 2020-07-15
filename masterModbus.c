@@ -1,4 +1,3 @@
-
 #include "masterModbus.h"
 #include "answerFrameModbus.h"
 #include "stm32f10x_tim.h"
@@ -8,7 +7,6 @@ uint8_t requestIdle=1;
 static uint8_t turn=0;
 uint8_t K1countOn = 0;
 uint8_t isK1on = 0;
-
 
 
 void masterGpioInit()
@@ -56,36 +54,33 @@ void master_init(void)
 	TIM_Cmd(TIM4, DISABLE);
 	TIM7_Init();
 	TIM_Cmd(TIM7, DISABLE);
-	//u8 crc8 = CalcCRC8FromChId();
-	//for(uint32_t ii = 0; ii < crc8*100000; ii++);
-	//printf("crc8 = %d \n\r", crc8);
 
 	//printf("---first.start=%d,first.stop=%d,second.start=%d,second.stop=%d\n\r",g_UPPstruct->lastStartTime, g_UPPstruct->lastStopTime, g_SecondUPP->lastStartTime, g_SecondUPP->lastStopTime);
 	ReadFromBKP();
-	printf("+++first.start=%d,first.stop=%d,second.start=%d,second.stop=%d\n\r",g_UPPstruct->lastStartTime, g_UPPstruct->lastStopTime, g_SecondUPP->lastStartTime, g_SecondUPP->lastStopTime);
+	printf("+++ first.start=%d,first.stop=%d,second.start=%d,second.stop=%d\n\r", g_UPPstruct->lastStartTime, g_UPPstruct->lastStopTime, g_SecondUPP->lastStartTime, g_SecondUPP->lastStopTime);
 	GPIO_ResetBits(GPIOA, GPIO_Pin_6); // Отключение LED рестарта
 //GPIO_SetBits(GPIO_PORT_RESTART_OTHER_MC, GPIO_PIN_RESTART_OTHER_MC);
 //DELAY50000;
 //GPIO_ResetBits(GPIO_PORT_RESTART_OTHER_MC, GPIO_PIN_RESTART_OTHER_MC);
 
-
 	equipment_config();
-	contactorSetOn();
+//contactorSetOn();
 	//SWAlarm_AddInterval(gTimerForTalking, gTimerForTalking, TalkingBtwnCtrs);
 	SWAlarm_AddInterval(MONITORING_TIME, 2,  masterRequest);
 	SWAlarm_AddInterval(3, 1,  led5blink);
 	SWAlarm_AddInterval(32, 10, reqUPPTo_CONTROL_BY_SERVER);
-
 }
 
 
 void masterRequest(u8 hdl, u32 time)
 {
+	//printf(" masterRequest(u8 hdl, u32 time) \n\r");
 	//controlUnitRqst();  //опрос контроллера управления сбросом
 	//if(!UPPchoice()) return;
 	UPPchoice();
 	if(gControlMode == CONTROL_BY_AUTO)
 	{
+		//printf(" if(gControlMode == CONTROL_BY_AUTO) \n\r");
 		gTransferAllow = 0;  //?
 //		monitoring();
 		tsCallback askingWlsCb;
@@ -104,9 +99,16 @@ void monitoring(u8 hdl, u32 param)
 	requestIdle = 0;
 	TalkingBtwnCtrs();
 
-	if(g_sConfig.u8Mode == MODE_SLAVE && (!gIsRestartMC || gCountNotAnswerController < 2))
+	if(g_sConfig.u8Mode == MODE_SLAVE && (!gIsRestartMC || gCountNotAnswerController < 2) && !gIsAccessSecondCrtl)
 	{
 		printf("g_sConfig.u8Mode == MODE_SLAVE && (!gIsRestartMC || gCountNotAnswerController < 2) \n\r");
+		requestIdle =1;
+		return;
+	}
+	if(g_sConfig.u8Mode == MODE_MASTER && gIsAccessSecondCrtl)
+	{
+		printf("g_sConfig.u8Mode == MODE_MASTER && gIsAccessSecondCrtl \n\r");
+		requestIdle =1;
 		return;
 	}
 	//printf("+++++++++++++++++monitoring+++++++++++++++++++++++ \n\r");
@@ -114,6 +116,7 @@ void monitoring(u8 hdl, u32 param)
 	if(!CheckConfig(&g_sConfig)) ReadConfig();
 	uint8_t count;
 
+	printf("+++++++monitoring +++++++++\n\r");
 
 	//UPPstatusRqst();
 	/*//20200629 Ильмир
@@ -134,7 +137,8 @@ void monitoring(u8 hdl, u32 param)
 	if( wlsOk ) //опросилась Башня напрямую или получил данные из сервера
 	{
 		//printf("if( wlsOk ) \n\r");
-		//g_WLS.status = 0;
+		//g_WLS.status = 1;
+		//g_UPPstruct->engineSts = ENGINE_START_STATUS;
 		//printf("g_UPPstruct->engineSts = %d \n\r", g_UPPstruct->engineSts);
 		if(g_WLS.status <= 1 && g_UPPstruct->engineSts != ENGINE_START_STATUS)
 		{
@@ -180,14 +184,14 @@ void monitoring(u8 hdl, u32 param)
 		}
 	}
 
-	printf("end monitoring\n\r");
+	//printf("end monitoring\n\r");
 	requestIdle = 1;
 }
 //общение между контроллерами
 void TalkingBtwnCtrs(){
 	if(g_sConfig.u8Mode == MODE_MASTER)
 	{
-		uint8_t ret1[44];
+		uint8_t ret1[45];
 		CMDForTalkingBetweenControllers(&ret1);
 		TalkingBtwnCtrls_Send(TALKING_BTWN_CONTROLLERS, MODBUS_CMD_SEND, ret1, sizeof(ret1));
 	}
@@ -361,9 +365,16 @@ uint8_t UPPstatusRqst(softStarter* Upp)   //Запрос статуса UPP
  	int8_t lengthWait =-1;
  	if(MasterModbusSend(Upp->NA, fun, data, sizeof(data), lengthWait, 3, 1))
  	{
+ 		gCountNotAnswerPump = 0;
  		//printf("%10d:Upp->engineSts=%x\n\r ", RTC_GetCounter(),	Upp->engineSts);
  		UPPparse(&g_frame, Upp);
  		return 1;
+ 	}
+ 	printf("gCountNotAnswerPump = %d gIsAccessSecondCrtl=%d \n\r",gCountNotAnswerPump,gIsAccessSecondCrtl);
+ 	if(gCountNotAnswerPump < 6) gCountNotAnswerPump++;
+ 	if(gCountNotAnswerPump > 2 && !gIsAccessSecondCrtl)
+ 	{
+ 		GiveCtrlSecondMC(1, MODBUS_CMD_SEND);
  	}
  	return 0;
 }
@@ -631,7 +642,7 @@ uint8_t WlsStatusRqst(){
 		//printf("222wlsOk=%d gIsRestartMC=%d\n\r",wlsOk, gIsRestartMC);
 		//попросить slave опросить wls
 		uint8_t ret1[4];
-		AckingWLSToMC(&ret1);
+		ArrFillDATANULL(&ret1);
 		if(!Talking_Send(TALKING_ASKING_WLS, ret1)) return 0;
 		if(g_dataTalk[0] == 0)
 		{
@@ -677,10 +688,10 @@ void UPPparse(uint8_t* data, softStarter* Upp)
 	if(CHECK_BIT(Upp->status, MODBUS_REG_STOP_STATUS_SOFTSTARTER) && !CHECK_BIT(Upp->status, MODBUS_REG_START_STATUS_SOFTSTARTER))
 	{
 		//TODO УПП остановлено
+		ReadFromBKP();
 		Upp->engineSts = ENGINE_STOP_STATUS;
 		if( (Upp->lastStopTime == TIME_UNDEFINED) || (Upp->lastStopTime <= TIME_RELEASE))
 		{
-			ReadFromBKP();
 			Upp->lastStopTime = RTC_GetCounter();
 			WriteToBKPLastStopTime(Upp);
 		}
@@ -1128,4 +1139,5 @@ void WriteToBKPLastStopTime(softStarter* Upp)
 		BKP_WriteBackupRegister(BKP_SECOND_LAST_STOP2, Upp->lastStopTime >> 16);
 	}
 }
+
 #endif

@@ -4,7 +4,7 @@
 
 //PRIVATE u8 CheckConfig(tsConfig *psConfig);
 //PRIVATE void ReadConfig(void);
-PRIVATE void WriteConfig(void);
+PUBLIC void WriteConfig(void);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -71,7 +71,6 @@ PUBLIC void Config_Reset(void)
 	Usart_Config_SetDefault(&g_sConfig.sUart3, USART3_SPEED);
 	Usart_Config_SetDefault(&g_sConfig.sUart4, UART4_SPEED);
 	Usart_Config_SetDefault(&g_sConfig.sUart5, UART5_SPEED);
-
 	WriteConfig();
 }
 #endif

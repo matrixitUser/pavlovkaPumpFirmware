@@ -27,6 +27,12 @@ PRIVATE void answerFrameProcess(uint8_t NA, uint8_t* frame, uint16_t len)
 			//TODO Отправка наверх (на сервер)
 			//_printf(2, "NOT RIGHT COMMAND|\n\r");
 		}
+		else if((NA == g_UPPstruct->NA || NA == g_SecondUPP->NA) && g_sConfig.u8Mode == MODE_MASTER)
+		{
+			printf("---MODE_MASTER------------------na=%d--------------------------\n\r", NA);
+			gIsAccessSecondCrtl = 0;
+
+		}
 		req.respSts=0;
 	}
 	if(gControlMode == CONTROL_BY_SERVER)

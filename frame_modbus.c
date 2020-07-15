@@ -696,12 +696,13 @@ PRIVATE void FrameProcess(u8 hdl, u32 len)
 		{
 			if(g_sConfig.u8Mode == MODE_MASTER)
 			{
+				printf("MODBUS_SWITCH_CONTROLLER_MODE \n\r");
 				ServerCall(MODBUS_SWITCH_CONTROLLER_MODE);
 			}
 			else
 			{
-				ret[0]=0; //  не может поменять mode, тк slave
-				ret[1]=g_sConfig.u8Mode;
+				ret[0] = 0; //  не может поменять mode, тк slave
+				ret[1] = g_sConfig.u8Mode;
 				FrameModbus_Send(frame[0], ret,2);
 			}
 			break;
@@ -724,20 +725,32 @@ void ServerCallbackParse(u8 hdl, u32 param) // hdl === fun
 	switch(hdl)
 	{
 		case MODBUS_SWITCH_CONTROLLER_MODE:
-			SwitchCtrlMode();
+			testFunc();//SwitchCtrlMode();
 			return;
 	}
+}
+
+void testFunc()
+{
+	printf("testFunc()\n\r");
+	uint8_t ret1[4];
+	ArrFillDATANULL(&ret1);
+	ret1[0] = g_UPPstruct->NA;
+	Talking_Send(TALKING_UPP_RQST, ret1);
 }
 
 void SwitchCtrlMode()
 {
 	uint8_t ret1[4];
 	ArrFillDATANULL(&ret1);
+	ret1[0] = g_sConfig.u8Mode;
 	u8 ret[2];
+	printf("SwitchCtrlMode()\n\r");
 	if(!Talking_Send(TALKING_SWITCH_MASTER, ret1)) ret[0] = 0;
 	else if(g_sConfig.u8Mode == MODE_MASTER) ret[0] = 0;
 	else ret[0] = 1;
 	ret[1] = g_sConfig.u8Mode;
+	printf("ret0=%d ret1=%d\n\r",ret[0], ret[1]);
 	FrameModbus_Send(MODBUS_SWITCH_CONTROLLER_MODE, ret, sizeof(ret));
 }
 

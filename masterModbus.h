@@ -105,3 +105,4 @@ void UPPstartNew(softStarter* Upp);
 #define BKP_SECOND_LAST_START2				BKP_DR6
 #define BKP_SECOND_LAST_STOP1				BKP_DR7
 #define BKP_SECOND_LAST_STOP2				BKP_DR8
+//#define BKP_CRTL_MODE						BKP_DR11
